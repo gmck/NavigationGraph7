@@ -4,7 +4,7 @@ using Android.Widget;
 using AndroidX.Fragment.App;
 using AndroidX.Navigation;
 
-namespace com.companyname.NavigationGraph6.Fragments
+namespace com.companyname.navigationgraph7.Fragments
 {
     public class RaceResultFragment : ImmersiveFragment
     {

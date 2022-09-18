@@ -2,7 +2,7 @@
 using Android.Views;
 using AndroidX.Fragment.App;
 
-namespace com.companyname.NavigationGraph6.Fragments
+namespace com.companyname.navigationgraph7.Fragments
 {
     public class SampleFragment1 : Fragment
     {

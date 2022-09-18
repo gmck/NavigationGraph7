@@ -3,9 +3,9 @@ using AndroidX.Activity;
 using AndroidX.Fragment.App;
 using AndroidX.Navigation;
 using AndroidX.Preference;
-using com.companyname.NavigationGraph6.Fragments;
+using com.companyname.navigationgraph7.Fragments;
 
-namespace com.companyname.NavigationGraph6
+namespace com.companyname.navigationgraph7
 {
     public class NavFragmentOnBackPressedCallback : OnBackPressedCallback
     {

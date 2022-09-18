@@ -4,7 +4,7 @@ using Android.OS;
 using AndroidX.AppCompat.App;
 using AndroidX.Preference;
 
-namespace com.companyname.NavigationGraph6
+namespace com.companyname.navigationgraph7
 {
     [Activity(Label = "BaseActivity")]
     public class BaseActivity : AppCompatActivity

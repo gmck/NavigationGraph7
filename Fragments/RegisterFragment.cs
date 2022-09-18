@@ -6,7 +6,7 @@ using AndroidX.Fragment.App;
 using AndroidX.Navigation;
 using AndroidX.Navigation.UI;
 
-namespace com.companyname.NavigationGraph6.Fragments
+namespace com.companyname.navigationgraph7.Fragments
 {
     // The comments here also apply equally to the LeaderboardFragment 
     // By default because the LeaderboardFragment and the RegisterFragment are not top level fragments, they will default to showing an up button or left arrow on the toolbar plus the title of the fragment

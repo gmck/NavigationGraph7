@@ -1,11 +1,11 @@
 ﻿using AndroidX.Fragment.App;
 using AndroidX.Lifecycle;
 using AndroidX.ViewPager2.Adapter;
-using com.companyname.NavigationGraph6.Fragments;
+using com.companyname.navigationgraph7.Fragments;
 using Java.Lang.Reflect;
 using Org.W3c.Dom;
 
-namespace com.companyname.NavigationGraph6.Adapters
+namespace com.companyname.navigationgraph7.Adapters
 {
     public class LeaderboardViewPagerStateAdapter : FragmentStateAdapter
     {

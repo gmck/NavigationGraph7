@@ -1,4 +1,4 @@
-﻿namespace com.companyname.NavigationGraph6
+﻿namespace com.companyname.navigationgraph7
 {
     public class  AnimationResource
     {

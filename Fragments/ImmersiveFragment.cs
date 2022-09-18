@@ -3,7 +3,7 @@ using Android.Util;
 using AndroidX.Core.Content;
 using AndroidX.Core.View;
 
-namespace com.companyname.NavigationGraph6.Fragments
+namespace com.companyname.navigationgraph7.Fragments
 {
     public class ImmersiveFragment : AndroidX.Fragment.App.Fragment
     {

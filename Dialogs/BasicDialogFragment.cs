@@ -5,7 +5,7 @@ using Android.Widget;
 using AndroidX.AppCompat.App;
 using Google.Android.Material.Dialog;
 
-namespace com.companyname.NavigationGraph6
+namespace com.companyname.navigationgraph7
 {
     internal class BasicDialogFragment : AppCompatDialogFragment
     {

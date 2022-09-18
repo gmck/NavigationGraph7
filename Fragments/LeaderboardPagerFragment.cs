@@ -5,12 +5,12 @@ using AndroidX.Fragment.App;
 using AndroidX.Navigation;
 using AndroidX.Preference;
 using AndroidX.ViewPager2.Widget;
-using com.companyname.NavigationGraph6.Adapters;
+using com.companyname.navigationgraph7.Adapters;
 using Google.Android.Material.Tabs;
 using System;
 
 
-namespace com.companyname.NavigationGraph6.Fragments
+namespace com.companyname.navigationgraph7.Fragments
 {
     public class LeaderboardPagerFragment : Fragment  
     {

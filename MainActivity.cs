@@ -10,7 +10,7 @@ using AndroidX.Preference;
 using Google.Android.Material.BottomNavigation;
 using Google.Android.Material.Navigation;
 
-namespace com.companyname.NavigationGraph6
+namespace com.companyname.navigationgraph7
 {
     [Activity(Label = "@string/app_name",  MainLauncher = true)]
     

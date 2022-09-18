@@ -1,14 +1,14 @@
 ﻿using Android.Content;
 using Android.OS;
 using Android.Views;
-using Android.Widget; 
+using Android.Widget;
 using AndroidX.Core.View;
 using AndroidX.Fragment.App;
 using AndroidX.Navigation;
 using AndroidX.Navigation.UI;
 using AndroidX.Preference;
 
-namespace com.companyname.NavigationGraph6.Fragments
+namespace com.companyname.navigationgraph7.Fragments
 {
     // OnCreateOptionsMenu, SetHasOptionsMenu (or when using C# HasOptionsMenu) and OnOptionsItemSelected have been deprecated with the release of Xamarin.AndroidX.Navigation.Fragment 2.5.1
     // New with this release are the new IMenuProvider and IMenuHost and replacement methods OnCreateMenu and OnMenuItemSelected
@@ -63,7 +63,6 @@ namespace com.companyname.NavigationGraph6.Fragments
 
             // More concise than the above 
             // (RequireActivity() as IMenuHost).AddMenuProvider(this, ViewLifecycleOwner, AndroidX.Lifecycle.Lifecycle.State.Resumed);
-            
         }
         #endregion
 
@@ -168,6 +167,4 @@ namespace com.companyname.NavigationGraph6.Fragments
         }
         #endregion
     }
-
-
 }

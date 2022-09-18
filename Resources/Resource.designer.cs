@@ -8,9 +8,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: global::Android.Runtime.ResourceDesignerAttribute("com.companyname.NavigationGraph6.Resource", IsApplication=true)]
+[assembly: global::Android.Runtime.ResourceDesignerAttribute("com.companyname.navigationgraph7.Resource", IsApplication=true)]
 
-namespace com.companyname.NavigationGraph6
+namespace com.companyname.navigationgraph7
 {
 	
 	

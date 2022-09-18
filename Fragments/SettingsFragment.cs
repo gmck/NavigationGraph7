@@ -5,7 +5,7 @@ using AndroidX.AppCompat.App;
 using AndroidX.Preference;
 using System;
 
-namespace com.companyname.NavigationGraph6.Fragments
+namespace com.companyname.navigationgraph7.Fragments
 {
     public class SettingsFragment : PreferenceFragmentCompat
     {

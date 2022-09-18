@@ -9,7 +9,7 @@
 		android:key="general"
 		android:title ="@string/generalCategoryTitle">
 
-		<com.companyname.NavigationGraph6.ColorThemeListPreference
+		<com.companyname.navigationgraph7.ColorThemeListPreference
 			app:iconSpaceReserved="false"
 			android:key="colorThemeValue"
 			android:defaultValue="1"
@@ -17,7 +17,7 @@
 			android:dialogTitle ="@string/colorThemeListPreferenceDialogTitle"
 			android:summary ="@string/colorThemeListPreferenceSummary"/>
 
-		<com.companyname.NavigationGraph6.SystemThemeListPreference
+		<com.companyname.navigationgraph7.SystemThemeListPreference
 			app:iconSpaceReserved="false"
 			android:key="systemThemeValue"
 			android:defaultValue="1"
