@@ -23,6 +23,18 @@
 		android:label="@string/menu_slideshow"
         tools:layout="@layout/fragment_slideshow" />
 
+	<fragment
+        android:id="@+id/widgets_fragment"
+        android:name="com.companyname.navigationgraph7.fragments.WidgetsFragment"
+		android:label="@string/menu_widgets"
+        tools:layout="@layout/fragment_widgets" />
+
+	<fragment
+        android:id="@+id/purchase_fragment"
+        android:name="com.companyname.navigationgraph7.fragments.PurchaseFragment"
+		android:label="@string/menu_subscription_purchase"
+        tools:layout="@layout/fragment_purchase" />
+	
 	<!--not a top destination-->
 	<fragment
 		android:id="@+id/settingsFragment"

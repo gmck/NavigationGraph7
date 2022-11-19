@@ -1,19 +1,28 @@
-﻿using Android.Graphics;
+﻿using Android.OS;
 using Android.Util;
-using AndroidX.Core.Content;
+using Android.Views;
 using AndroidX.Core.View;
+using AndroidX.Fragment.App;
 
 namespace com.companyname.navigationgraph7.Fragments
 {
-    public class ImmersiveFragment : AndroidX.Fragment.App.Fragment
+    public class ImmersiveFragment : Fragment 
     {
-        private WindowInsetsControllerCompat windowInsetsControllerCompat;
+        private readonly string logTag = "navigationGraph7";
+
+        public ImmersiveFragment() { }
 
         #region OnStart
         public override void OnStart()
         {
             base.OnStart();
-            windowInsetsControllerCompat = new WindowInsetsControllerCompat(Activity.Window, Activity.Window.DecorView);
+            
+            Log.Debug(logTag, "ImmersiveFragment - OnStart");
+            if (Activity is MainActivity mainActivity)
+            {
+                mainActivity.SupportActionBar.Hide();
+                mainActivity.DisableDrawerLayout();             // Disable the navigationDrawer of the MainActivity. We don't want a user to be able to swipe it into view while viewing any of the gauges
+            }
         }
         #endregion
 
@@ -21,7 +30,9 @@ namespace com.companyname.navigationgraph7.Fragments
         public override void OnResume()
         {
             base.OnResume();
+
             HideSystemUi();
+            Log.Debug(logTag, "ImmersiveFragment - OnResume - called HideSystemUI");
         }
         #endregion
 
@@ -36,32 +47,27 @@ namespace com.companyname.navigationgraph7.Fragments
         #region HideSystemUi
         public void HideSystemUi()
         {
-
             // 17/01/2022 Added this reference as explanation of why we needed this code from Android 11 and on...
             // Don't use android:fitsSystemWindows="true" anywhere.
             // Refer to https://stackoverflow.com/questions/57293449/go-edge-to-edge-on-android-correctly-with-windowinsets/70714398#70714398 goto the bottom for this solution
 
-            if (Activity is MainActivity mainActivity)
-            {
-                mainActivity.SupportActionBar.Hide();
-                mainActivity.DisableDrawerLayout();             // Disable the navigationDrawer of the MainActivity. We don't want a user to be able to swipe it into view while viewing any of the gauges
-            }
-
-            WindowCompat.SetDecorFitsSystemWindows(Activity.Window, false);
-            windowInsetsControllerCompat.Hide(WindowInsetsCompat.Type.StatusBars() | WindowInsetsCompat.Type.NavigationBars());
+            // Had to add the following line to ensure the immersiveFragment went full screen on launch, without it it left a black rectangle where the statusbar had been. 
+            // Note it would display correctly after one rotation on return from the rotation was ok.
+            Activity.Window.AddFlags(WindowManagerFlags.LayoutNoLimits);
+            //WindowCompat.SetDecorFitsSystemWindows(Activity.Window, false);   // Don't need, because it is our default at startup - see BaseActivity
+            WindowInsetsControllerCompat windowInsetsControllerCompat = WindowCompat.GetInsetsController(Activity.Window, Activity.Window.DecorView);
             windowInsetsControllerCompat.SystemBarsBehavior = WindowInsetsControllerCompat.BehaviorShowTransientBarsBySwipe;
+            windowInsetsControllerCompat.Hide(WindowInsetsCompat.Type.StatusBars() | WindowInsetsCompat.Type.NavigationBars());
+
         }
         #endregion
 
         #region ShowSystemUi
         private void ShowSystemUi()
         {
-            TypedValue typedValue = new TypedValue();
-            Activity.Theme.ResolveAttribute(Resource.Attribute.colorSurface, typedValue, true);
-            int color = ContextCompat.GetColor(Context, typedValue.ResourceId);
-            Activity.Window.DecorView.SetBackgroundColor(new Color(color));
-
-            WindowCompat.SetDecorFitsSystemWindows(Activity.Window, true);
+            Activity.Window.ClearFlags(WindowManagerFlags.LayoutNoLimits); // We had to add, so we need to clear it.
+            //WindowCompat.SetDecorFitsSystemWindows(Activity.Window, true);    // Don't need because it is false at start up      
+            WindowInsetsControllerCompat windowInsetsControllerCompat = WindowCompat.GetInsetsController(Activity.Window, Activity.Window.DecorView);
             windowInsetsControllerCompat.Show(WindowInsetsCompat.Type.StatusBars() | WindowInsetsCompat.Type.NavigationBars());
 
             if (Activity is MainActivity mainActivity)
@@ -71,6 +77,8 @@ namespace com.companyname.navigationgraph7.Fragments
             }
         }
         #endregion
+
+        
     }
 }
 

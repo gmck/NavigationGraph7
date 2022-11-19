@@ -56,6 +56,11 @@ namespace com.companyname.navigationgraph7
                 registerFragment.HandleBackPressed(navOptions);
             else if (fragment is RaceResultFragment raceResultFragment)
                 raceResultFragment.HandleBackPressed(navOptions);
+            else if (fragment is WidgetsFragment widgetsFragment)
+                widgetsFragment.HandleBackPressed(navOptions);
+            else if (fragment is PurchaseFragment purchaseFragment)
+                purchaseFragment.HandleBackPressed(navOptions);
+
         }
     } 
 }

@@ -11,24 +11,41 @@
 	</style>
 
 
-	<style name="AlertDialogRoundedCornersTheme" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+	<style name="AlertDialogRoundedCornersTheme" parent="ThemeOverlay.Material3.MaterialAlertDialog">
 		<item name="materialAlertDialogTitlePanelStyle">@style/TitlePanelCenter</item>
 		<item name="materialAlertDialogTitleTextStyle">@style/TitleTextStyle</item>
 		<item name="shapeAppearanceMediumComponent">@style/RoundShapeAppearance</item>
 	</style>
 
-	<style name="TitlePanelCenter" parent="MaterialAlertDialog.MaterialComponents.Title.Panel">
+	<style name="TitlePanelCenter" parent="MaterialAlertDialog.Material3.Title.Panel">
 		<item name="android:gravity">center_horizontal</item>
 	</style>
 
-	<style name="TitleTextStyle" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
+	<style name="TitleTextStyle" parent="MaterialAlertDialog.Material3.Title.Text">
 		<!-- Just bold the Title.Text-->
 		<item name="android:textStyle">bold</item>
 	</style>
 
-	<style name="RoundShapeAppearance" parent="ShapeAppearance.MaterialComponents.MediumComponent">
+	<style name="RoundShapeAppearance" parent="ShapeAppearance.Material3.MediumComponent">
 		<item name="cornerFamily">rounded</item>
 		<item name="cornerSize">16dp</item>
 	</style>
 
+
+	<!--BottomSheetDialogRounded-->
+	<style name="BottomSheetDialog_Rounded" parent="@style/ThemeOverlay.Material3.BottomSheetDialog">
+		<item name="bottomSheetStyle">@style/BottomSheet_Rounded</item>
+	</style>
+
+	<style name="BottomSheet_Rounded" parent="Widget.Material3.BottomSheet">
+		<item name="shapeAppearanceOverlay">@style/ShapeAppearanceBottomSheetDialog_Rounded</item>
+	</style>
+
+	<style name="ShapeAppearanceBottomSheetDialog_Rounded" parent="">
+		<item name="cornerFamily">rounded</item>
+		<item name="cornerSizeTopRight">28dp</item>
+		<item name="cornerSizeTopLeft">28dp</item>
+		<item name="cornerSizeBottomRight">0dp</item>
+		<item name="cornerSizeBottomLeft">0dp</item>
+	</style>
 </resources>

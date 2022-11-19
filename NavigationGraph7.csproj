@@ -61,6 +61,7 @@
     <AndroidEnableProfiledAot>true</AndroidEnableProfiledAot>
     <BundleAssemblies>false</BundleAssemblies>
     <AndroidLinkTool>r8</AndroidLinkTool>
+    <AndroidSupportedAbis />
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -76,10 +77,12 @@
     <Compile Include="BaseActivity.cs" />
     <Compile Include="ColorThemeListPreference.cs" />
     <Compile Include="Dialogs\BasicDialogFragment.cs" />
+    <Compile Include="Dialogs\HelperExplanationDialogFragment.cs" />
     <Compile Include="Fragments\GalleryFragment.cs" />
     <Compile Include="Fragments\ImmersiveFragment.cs" />
     <Compile Include="Fragments\LeaderboardPagerFragment.cs" />
     <Compile Include="Fragments\HomeFragment.cs" />
+    <Compile Include="Fragments\PurchaseFragment.cs" />
     <Compile Include="Fragments\RaceResultFragment.cs" />
     <Compile Include="Fragments\RegisterFragment.cs" />
     <Compile Include="Fragments\SampleFragment1.cs" />
@@ -87,8 +90,12 @@
     <Compile Include="Fragments\SampleFragment3.cs" />
     <Compile Include="Fragments\SettingsFragment.cs" />
     <Compile Include="Fragments\SlideshowFragment.cs" />
+    <Compile Include="Fragments\WidgetsFragment.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="NavFragmentOnBackPressedCallback.cs" />
+    <Compile Include="NavigationGraph7.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="SystemThemeListPreference.cs" />
@@ -128,20 +135,20 @@
     <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_launcher_round.png" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Xamarin.AndroidX.AppCompat" Version="1.5.0" />
+    <PackageReference Include="Xamarin.AndroidX.AppCompat" Version="1.5.1.1" />
     <PackageReference Include="Xamarin.AndroidX.Core.SplashScreen">
-      <Version>1.0.0.1-rc01</Version>
+      <Version>1.0.0.1</Version>
     </PackageReference>
     <PackageReference Include="Xamarin.AndroidX.Navigation.Fragment">
-      <Version>2.5.1</Version>
+      <Version>2.5.3</Version>
     </PackageReference>
     <PackageReference Include="Xamarin.AndroidX.Navigation.UI">
-      <Version>2.5.1</Version>
+      <Version>2.5.3</Version>
     </PackageReference>
     <PackageReference Include="Xamarin.AndroidX.Preference">
       <Version>1.2.0.2</Version>
     </PackageReference>
-    <PackageReference Include="Xamarin.Google.Android.Material" Version="1.6.1.1" />
+    <PackageReference Include="Xamarin.Google.Android.Material" Version="1.7.0.1" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\activity_main.xml" />
@@ -210,9 +217,6 @@
     <AndroidResource Include="Resources\drawable\selected_dot.xml" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\drawable\side_nav_bar.xml" />
-  </ItemGroup>
-  <ItemGroup>
     <AndroidResource Include="Resources\drawable\splash_logo.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -279,6 +283,19 @@
     <AndroidResource Include="Resources\layout\fragment_raceresult.xml">
       <SubType>Designer</SubType>
     </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\fragment_widgets.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\fragment_purchase.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\generic_dialog_switch_scrollable.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

@@ -1,7 +1,6 @@
 ﻿using Android.OS;
 using Android.Views;
 using Android.Widget;
-using AndroidX.Fragment.App;
 using AndroidX.Navigation;
 
 namespace com.companyname.navigationgraph7.Fragments
@@ -17,9 +16,7 @@ namespace com.companyname.navigationgraph7.Fragments
         {
             View view = inflater.Inflate(Resource.Layout.fragment_raceresult, container, false);
             TextView textView = view.FindViewById<TextView>(Resource.Id.text_race_result);
-
             textView.Text = "Immersive RaceResult fragment";
-
             return view;
         }
         #endregion

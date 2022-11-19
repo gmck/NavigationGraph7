@@ -44,9 +44,28 @@ namespace com.companyname.navigationgraph7.Fragments
                 else
                     checkboxDarkThemePreference.Enabled = false;
             }
-        }
 
-        
+            if (PreferenceScreen.FindPreference("use_dynamic_colors") is CheckBoxPreference checkboxDynamicColors)
+            {
+                if (Build.VERSION.SdkInt >= BuildVersionCodes.S)
+                    checkboxDynamicColors.PreferenceChange += CheckboxDynamicColors_PreferenceChange;
+                else
+                    checkboxDynamicColors.Enabled = false;
+            }
+
+            if (PreferenceScreen.FindPreference("use_transparent_statusbar") is CheckBoxPreference checkboxTransparentStausBar)
+                checkboxTransparentStausBar.PreferenceChange += CheckboxTransparentStausBar_PreferenceChange;
+
+
+            if (PreferenceScreen.FindPreference("devicesWithNotchesAllowFullScreen") is CheckBoxPreference checkboxDevicesWithNotchesAllFullScreen)
+            {
+                if (Build.VERSION.SdkInt >= BuildVersionCodes.Q)
+                    checkboxDevicesWithNotchesAllFullScreen.PreferenceChange += CheckboxDevicesWithNotchesAllFullScreen_PreferenceChange;
+                else
+                    checkboxDevicesWithNotchesAllFullScreen.Enabled = false;
+            }
+
+        }
         #endregion
 
         #region CheckboxDarkThemePreference_PreferenceChange
@@ -59,6 +78,39 @@ namespace com.companyname.navigationgraph7.Fragments
 
             // This is only available to devices running less than Android 10.
             SetDefaultNightMode(requestedNightMode);
+        }
+        #endregion
+
+        #region CheckboxDynamicColors_PreferenceChange
+        private void CheckboxDynamicColors_PreferenceChange(object sender, Preference.PreferenceChangeEventArgs e)
+        {
+            bool useDynamicColors = (bool)e.NewValue;
+            ISharedPreferencesEditor editor = sharedPreferences.Edit();
+            editor.PutBoolean("use_dynamic_colors", useDynamicColors).Apply();
+            editor.Commit();
+            Activity.Recreate();
+        }
+        #endregion
+
+        #region CheckboxDevicesWithNotchesAllFullScreen_PreferenceChange
+        private void CheckboxDevicesWithNotchesAllFullScreen_PreferenceChange(object sender, Preference.PreferenceChangeEventArgs e)
+        {  
+            bool requestedMode = (bool)e.NewValue;
+            ISharedPreferencesEditor editor = sharedPreferences.Edit();
+            editor.PutBoolean("devicesWithNotchesAllowFullScreen", requestedMode).Apply();
+            editor.Commit();
+            Activity.Recreate();
+        }
+        #endregion
+
+        #region CheckboxTransparentStausBar_PreferenceChange
+        private void CheckboxTransparentStausBar_PreferenceChange(object sender, Preference.PreferenceChangeEventArgs e)
+        {
+            bool useTransparentStatusBar = (bool)e.NewValue;
+            ISharedPreferencesEditor editor = sharedPreferences.Edit();
+            editor.PutBoolean("use_transparent_statusbar", useTransparentStatusBar).Apply();
+            editor.Commit();
+            Activity.Recreate();
         }
         #endregion
 
@@ -115,7 +167,7 @@ namespace com.companyname.navigationgraph7.Fragments
 
             UiModeManager uiModeManager = Activity.GetSystemService(Context.UiModeService) as UiModeManager;
             if (Build.VERSION.SdkInt >= BuildVersionCodes.S)
-                uiModeManager?.SetApplicationNightMode((int)uiNightMode);  // Only avaialable in Android 12 and above.
+                uiModeManager?.SetApplicationNightMode((int)uiNightMode);  // Only avaialable on Android 12 and above.
 
             ISharedPreferencesEditor editor = sharedPreferences.Edit();
             editor.PutInt("night_mode", (int)uiNightMode).Apply();
@@ -129,8 +181,5 @@ namespace com.companyname.navigationgraph7.Fragments
             AppCompatDelegate.DefaultNightMode = requestedNightMode ? AppCompatDelegate.ModeNightYes : AppCompatDelegate.ModeNightNo;
         }
         #endregion
-
-
-
     }
 }

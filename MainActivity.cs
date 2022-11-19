@@ -1,5 +1,7 @@
 ﻿using Android.App;
+using Android.Content;
 using Android.OS;
+using Android.Util;
 using Android.Views;
 using AndroidX.Core.View;
 using AndroidX.DrawerLayout.Widget;
@@ -7,65 +9,70 @@ using AndroidX.Navigation;
 using AndroidX.Navigation.Fragment;
 using AndroidX.Navigation.UI;
 using AndroidX.Preference;
+using Google.Android.Material.AppBar;
 using Google.Android.Material.BottomNavigation;
 using Google.Android.Material.Navigation;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace com.companyname.navigationgraph7
 {
-    [Activity(Label = "@string/app_name",  MainLauncher = true)]
-    
+    [Activity(Label = "@string/app_name", MainLauncher = true)]  //Theme = "@style/Theme.NavigationGraph.RedBmw",
     public class MainActivity : BaseActivity, IOnApplyWindowInsetsListener,
                                 NavController.IOnDestinationChangedListener,
                                 NavigationBarView.IOnItemSelectedListener,
-                                NavigationView.IOnNavigationItemSelectedListener 
+                                NavigationView.IOnNavigationItemSelectedListener
     {
+
+        private readonly string logTag = "navigationGraph7";
 
         private AppBarConfiguration appBarConfiguration;
         private NavigationView navigationView;
         private DrawerLayout drawerLayout;
         private BottomNavigationView bottomNavigationView;
         private NavController navController;
-       
+        private MaterialToolbar toolbar;
+
         // Preference variables - see OnDestinationChanged where they are checked
         private bool devicesWithNotchesAllowFullScreen;             // allow full screen for devices with notches
         private bool animateFragments;                              // animate fragments 
-
+        private bool resetHelperExplanationDialogs;
+        
+        private List<int> immersiveFragmentsDestinationIds;
+        
         #region OnCreate
         protected override void OnCreate(Bundle savedInstanceState)
         {
             AndroidX.Core.SplashScreen.SplashScreen.InstallSplashScreen(this);
-
             base.OnCreate(savedInstanceState);
-            
+
             // Only for demonstration purposes in that you can easily see the background color and the launch icon. Remove for production build.
             //System.Threading.Thread.Sleep(500);
 
             // Set our view from the "main" layout resource
             SetContentView(Resource.Layout.activity_main);
 
-            // This rather than android:windowTranslucentStatus in styles seems to have fixed the problem with the OK button on the BasicDialogFragment
-            // It also fixes the AppBarlayout so it extends full screen, when devicesWithNotchesAllowFullScreen = true; 
-            Window.AddFlags(WindowManagerFlags.TranslucentStatus);
-
             // Require a toolbar
-            AndroidX.AppCompat.Widget.Toolbar toolbar = FindViewById<AndroidX.AppCompat.Widget.Toolbar>(Resource.Id.toolbar);
+            toolbar = FindViewById<MaterialToolbar>(Resource.Id.toolbar);
             SetSupportActionBar(toolbar);
-            ViewCompat.SetOnApplyWindowInsetsListener(toolbar, this);
 
             // navigationView, bottomNavigationView for NavigationUI and drawerLayout for the AppBarConfiguration and NavigationUI
-            navigationView = FindViewById<NavigationView>(Resource.Id.nav_view);
             drawerLayout = FindViewById<DrawerLayout>(Resource.Id.drawer_layout);
+            navigationView = FindViewById<NavigationView>(Resource.Id.nav_view);
             bottomNavigationView = FindViewById<BottomNavigationView>(Resource.Id.bottom_nav);
 
             // NavHostFragment so we can get a NavController 
             NavHostFragment navHostFragment = SupportFragmentManager.FindFragmentById(Resource.Id.nav_host) as NavHostFragment;
             navController = navHostFragment.NavController;
 
-            
+
             // These are the fragments that you don't wont the back button of the toolbar to display on e.g. topLevel fragments. They correspond to the items of the NavigationView.
-            int[] topLevelDestinationIds = new int[] { Resource.Id.home_fragment, Resource.Id.gallery_fragment, Resource.Id.slideshow_fragment };
+            int[] topLevelDestinationIds = new int[] { Resource.Id.home_fragment, Resource.Id.gallery_fragment, Resource.Id.slideshow_fragment, Resource.Id.widgets_fragment, Resource.Id.purchase_fragment };
             appBarConfiguration = new AppBarConfiguration.Builder(topLevelDestinationIds).SetOpenableLayout(drawerLayout).Build();  // SetDrawerLayout replaced with SetOpenableLayout
 
+            // The following fragments are immersive fragments - see SetShortEdgesIfRequired
+            immersiveFragmentsDestinationIds = new List<int> { Resource.Id.race_result_fragment/*, Resource.Id.purchase_fragment */};
+            
             NavigationUI.SetupActionBarWithNavController(this, navController, appBarConfiguration);
 
             // Notes using both Navigation.Fragment and Navigation.UI version 2.3.5.3. Navigation.UI therefore includes Android.Material 1.4.0.4
@@ -79,8 +86,10 @@ namespace com.companyname.navigationgraph7
 
             // Upgrading to Navigation.Fragment and Navigation.UI version 2.4.2. Navigation.UI includes now Android.Material 1.5.0.2 - also tested 1.6.0
             navigationView.SetNavigationItemSelectedListener(this);
-            bottomNavigationView.ItemSelected += BottomNavigationView_ItemSelected;     
+            bottomNavigationView.ItemSelected += BottomNavigationView_ItemSelected;
 
+            ViewCompat.SetOnApplyWindowInsetsListener(toolbar, this);
+            ViewCompat.SetOnApplyWindowInsetsListener(drawerLayout, this);
 
             // Add the DestinationChanged listener
             navController.AddOnDestinationChangedListener(this);
@@ -110,43 +119,60 @@ namespace com.companyname.navigationgraph7
         #region OnApplyWindowInsets
         public WindowInsetsCompat OnApplyWindowInsets(View v, WindowInsetsCompat insets)
         {
-            #region Notes
-            // Using a Pixel3a, which doesn't have a notch. Took some time to figure this out. The debugger was not breaking here when first starting the app or even on screen rotation even when simulating a display 
-            // cutout. However once you add <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item> to your theme, which changes the default setting of LayoutInDisplayCutoutMode.Default (letter box 
-            // both portraint and landscape - a terrible look). The debugger now will break at the following line. 
-            #endregion
-
-            if (v is AndroidX.AppCompat.Widget.Toolbar)
+            AndroidX.Core.Graphics.Insets statusBarsInsets = insets.GetInsets(WindowInsetsCompat.Type.StatusBars());
+            // This is the only one we need the rest were for Log.Debug purposes to prove that we weren't getting insets until after the HideSystemUi had executed. 
+            AndroidX.Core.Graphics.Insets systemBarsInsets = insets.GetInsets(WindowInsetsCompat.Type.SystemBars());            
+            AndroidX.Core.Graphics.Insets navigationBarsInsets = insets.GetInsets(WindowInsetsCompat.Type.NavigationBars());
+            
+            if (v is MaterialToolbar)
             {
-                AndroidX.Core.Graphics.Insets statusBarsInsets = insets.GetInsets(WindowInsetsCompat.Type.StatusBars());
+                SetTopMargin(v, statusBarsInsets);
 
-                SetMargins(v, statusBarsInsets);
+                // Appear never to need displayCutout because it is always null
                 if (Build.VERSION.SdkInt >= BuildVersionCodes.P)
                 {
                     if (insets.DisplayCutout != null)
                     {
-                        if (devicesWithNotchesAllowFullScreen)
-                            Window.Attributes.LayoutInDisplayCutoutMode = LayoutInDisplayCutoutMode.ShortEdges;
-                        else
-                            Window.Attributes.LayoutInDisplayCutoutMode = LayoutInDisplayCutoutMode.Default;
+                        Window.Attributes.LayoutInDisplayCutoutMode = devicesWithNotchesAllowFullScreen ? LayoutInDisplayCutoutMode.ShortEdges : LayoutInDisplayCutoutMode.Default;
+                        Log.Debug(logTag, "MainActivity - LayoutInDisplayCutoutMode is " + Window.Attributes.LayoutInDisplayCutoutMode.ToString());
+                        Log.Debug(logTag, "MainActivity - statusBarsInsets are " + statusBarsInsets.ToString());
                     }
                 }
+                Log.Debug(logTag, "MainActivity - StatusBarsInsets are " + statusBarsInsets.ToString());
+                Log.Debug(logTag, "MainActivity - NavigationBarsInsets are " + navigationBarsInsets.ToString());
+                Log.Debug(logTag, "MainActivity - SystemBarsInsets are " + systemBarsInsets.ToString());
             }
+            else if (v is DrawerLayout)
+                SetLeftMargin(v, navigationBarsInsets);
+
             return insets;
         }
         #endregion
 
         #region SetMargins
-        private void SetMargins(View v, AndroidX.Core.Graphics.Insets insets)
+        private void SetTopMargin(View v, AndroidX.Core.Graphics.Insets insets)
         {
             ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams)v.LayoutParameters;
-            marginLayoutParams.LeftMargin = insets.Left;
-            marginLayoutParams.TopMargin = insets.Top;          // top is all we are concerned with
-            marginLayoutParams.RightMargin = insets.Right;
-            marginLayoutParams.BottomMargin = insets.Bottom;
+            Log.Debug(logTag, "MainActivity - marginLayoutParams.LeftMargin " + marginLayoutParams.LeftMargin.ToString());
+            marginLayoutParams.LeftMargin = marginLayoutParams.LeftMargin;
+            marginLayoutParams.TopMargin = insets.Top;          // top is all we are concerned with - this will position the toolbar insets.Top from the top of the screen
+            marginLayoutParams.RightMargin = marginLayoutParams.RightMargin;
+            marginLayoutParams.BottomMargin = marginLayoutParams.BottomMargin;
             v.LayoutParameters = marginLayoutParams;
             v.RequestLayout();
         }
+
+        private void SetLeftMargin(View v, AndroidX.Core.Graphics.Insets insets)
+        {
+            ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams)v.LayoutParameters;
+            marginLayoutParams.LeftMargin = insets.Left;        
+            marginLayoutParams.TopMargin = marginLayoutParams.TopMargin;
+            marginLayoutParams.RightMargin = insets.Right;// marginLayoutParams.RightMargin;
+            marginLayoutParams.BottomMargin = marginLayoutParams.BottomMargin;
+            v.LayoutParameters = marginLayoutParams;
+            v.RequestLayout();
+        }
+        // Make a single function for setting Margins
         #endregion
 
         #region OnSupportNavigationUp
@@ -184,6 +210,8 @@ namespace com.companyname.navigationgraph7
                 case Resource.Id.home_fragment:
                 case Resource.Id.gallery_fragment:
                 case Resource.Id.slideshow_fragment:
+                case Resource.Id.widgets_fragment:
+                case Resource.Id.purchase_fragment:
                     proceed = true;
                     break;
 
@@ -209,6 +237,7 @@ namespace com.companyname.navigationgraph7
         #region BottomNavigationViewItemSelected
         private void BottomNavigationView_ItemSelected(object sender, NavigationBarView.ItemSelectedEventArgs e)
         {
+            // Note NavigationBarView - not BottomNavigationView probably not what is expected. Note that BottomNavigationView inherits from NavigationBarView. See notes in NavigationGraph.docx
             if (!animateFragments)
                 AnimationResource.Fader2();
             else
@@ -232,7 +261,7 @@ namespace com.companyname.navigationgraph7
                 case Resource.Id.race_result_fragment:
                     proceed = true;
                     break;
-                
+
                 default:
                     break;
             }
@@ -268,34 +297,10 @@ namespace com.companyname.navigationgraph7
             // If you don't want the up button, remove it here. This also means that the additional code in OnSupportNavigationUp can be removed. 
             if (navDestination.Id == Resource.Id.leaderboardpager_fragment || navDestination.Id == Resource.Id.register_fragment || navDestination.Id == Resource.Id.race_result_fragment)
             {
-                AndroidX.AppCompat.Widget.Toolbar toolbar = FindViewById<AndroidX.AppCompat.Widget.Toolbar>(Resource.Id.toolbar);
-                toolbar.Title = navDestination.Label;
+                toolbar.Title = navDestination.Label;   // Could also make 
                 toolbar.NavigationIcon = null;
             }
-
-            #region Notes about Window.Attributes.LayoutInDisplayCutoutMode
-            // Here is a bit of a trick. If we haven't set <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item> in our theme (for whatever reason). Then OnApplyWindowInsets
-            // will never be called if our DrawerLayout and NavigationView have android:fitsSystemWindows="true". 
-
-            // Therefore to guarantee that it does get called we set it here, because we don't want to letterbox our normal layouts, especially all our landscape views with the gauge views
-            // Note if you do set it in styles then it should be in values-v28 or even values-v27. Android Studio gives you a warning if you try and set it in values. The problem setting in values-28 is that values-v28
-            // requires the theme of the activity. Normally our theme is the splash theme and we swap it by calling SetTheme(Resource.Style.OBDTheme) in the first line of OnCreate in the MainActivity.
-
-            // Note: Only when devicesWithNotchesAllowFullScreen is true and therefore LayoutInDisplayCutoutMode is ShortEdges will insets.DisplayCutout not be null.
-            // Whenever LayoutInDisplayCutoutMode it is default or never insets.DisplayCutout will always be null.
-            // So even if a device has a notch, if devicesWithNotchesAllOwFullScreen is false then will always get Default because DisplayCutout will be null.
-
-            // Do we need this? We only need shortEdges if we have a notch, therefore why not wait until the test in OnApplyWindowInsets?
-            // Answer: We do need it here, because if ShortEdges is not set here, then later in the test in OnApplyWindowInsets, insets.DisplayCutout will be null which will always result in Default being set,
-            // so we can't avoid this.
-            // It is really the same as if we had set ShortEdges in styles.xml of values-v28, (which we don't want to do because we are using OBDTheme.Splash). By presetting Window.Attributes.LayoutInDisplayCutoutMode
-            // here, when the user tells us they want it allows insets.DisplayCutout to be not null by the time we do the test in OnApplyWindowInsets.
-            // Note the Setting in Preferences has no effect if the device does not have a notch, so no harm is done if a user accidently sets devicesWithNotchesAllowFullscreen to true.
-            // TODO: Make a note in our user Guide.
-            #endregion
-
-            if (Build.VERSION.SdkInt >= BuildVersionCodes.P)
-                Window.Attributes.LayoutInDisplayCutoutMode = devicesWithNotchesAllowFullScreen ? LayoutInDisplayCutoutMode.ShortEdges : LayoutInDisplayCutoutMode.Default;
+            SetShortEdgesIfRequired(navDestination);
         }
         #endregion
 
@@ -303,114 +308,44 @@ namespace com.companyname.navigationgraph7
         private void CheckForPreferenceChanges()
         {
             // Check if anything has been changed in the Settings Fragment before re-reading and updating the preference variables
-            sharedPreferences = PreferenceManager.GetDefaultSharedPreferences(this);
-            devicesWithNotchesAllowFullScreen = sharedPreferences.GetBoolean("devicesWithNotchesAllowFullScreen", true);
+            resetHelperExplanationDialogs = sharedPreferences.GetBoolean("helper_screens", false);
+            
+            if (resetHelperExplanationDialogs) 
+            {
+                ISharedPreferencesEditor editor = sharedPreferences.Edit();
+                editor.PutBoolean("showSubscriptionExplanationDialog", true);
+                editor.PutBoolean("helper_screens", false);
+                editor.Commit();
+            }
+            
+            // Re read again.
+            resetHelperExplanationDialogs = sharedPreferences.GetBoolean("helper_screens", false);
+            devicesWithNotchesAllowFullScreen = sharedPreferences.GetBoolean("devicesWithNotchesAllowFullScreen", false);
             animateFragments = sharedPreferences.GetBoolean("use_animations", false);
         }
         #endregion
 
-        #region !! Methods only called by ImmersiveFragment if using
+        #region SetShortEdgesIfRequired
+        private void SetShortEdgesIfRequired(NavDestination navDestination)
+        {
+            // Note: LayoutInDisplayCutoutMode.ShortEdges could be set in HideSystemUi in the ImmersiveFragment if you didn't have this requirement. 
+
+            // For when we have more than one immersive fragment. Are they all going to displayed shortEdges or are only some screens (non immersive) going to be displayed ShortEdges.
+            // Still to be done - change wording of the deviceWithNotchesAllowFullScreen, which will mean all fragments other than the ImmersiveFragments - see immersiveFragmentsDestinationIds - only one in the project.
+            // Effectively it will be all fragments - or none, except all immersiveFragments will always be full screen because they will be in the List<int> immersiveFragmentDestinationIds. 
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.P)
+            {
+                Window.Attributes.LayoutInDisplayCutoutMode = immersiveFragmentsDestinationIds.Contains<int>(navDestination.Id) /*&& devicesWithNotchesAllowFullScreen*/ ? LayoutInDisplayCutoutMode.ShortEdges : LayoutInDisplayCutoutMode.Default;
+                Log.Debug(logTag, "SetShortEdgesIfRequired - LayoutInDisplayCutoutMode is " + Window.Attributes.LayoutInDisplayCutoutMode.ToString());
+            }
+        }
+        #endregion
+
+        #region Methods only called by ImmersiveFragment - if using
         public void DisableDrawerLayout() => drawerLayout.SetDrawerLockMode(DrawerLayout.LockModeLockedClosed);
         public void EnableDrawerLayout() => drawerLayout.SetDrawerLockMode(DrawerLayout.LockModeUnlocked);
         #endregion
 
-        // code removed from the MainActivity as compared to NavigationGraph5
-
-        #region OnCreateMenu - Commented - Now not required in the MainActivity, menu functionality now in HomeFragment 
-        //public void OnCreateMenu(IMenu menu, MenuInflater inflater)
-        //{
-        //    inflater.Inflate(Resource.Menu.main, menu);
-        //}
-
-        //public bool OnMenuItemSelected(IMenuItem menuItem)
-        //{
-        //    if (!animateFragments)
-        //        AnimationResource.Fader2();
-        //    else
-        //        AnimationResource.Slider();
-
-        //    NavOptions navOptions = new NavOptions.Builder()
-        //            .SetLaunchSingleTop(true)
-        //            .SetEnterAnim(AnimationResource.EnterAnimation)
-        //            .SetExitAnim(AnimationResource.ExitAnimation)
-        //            .SetPopEnterAnim(AnimationResource.PopEnterAnimation)
-        //            .SetPopExitAnim(AnimationResource.PopExitAnimation)
-        //            .SetPopUpTo(Resource.Id.home_fragment, false, true)     // Inclusive false, saveState true.
-        //            .SetRestoreState(true)
-        //            .Build();
-
-        //    if (menuItem.ItemId == Resource.Id.action_settings)
-        //    {
-        //        navController.Navigate(Resource.Id.settingsFragment, null, navOptions);
-        //        return true;
-        //    }
-        //    else if (menuItem.ItemId == Resource.Id.action_subscription_info)
-        //    {
-        //        ShowSubscriptionInfoDialog(GetString(Resource.String.subscription_explanation_title), GetString(Resource.String.subscription_explanation_text));
-        //        return true;
-        //    }
-        //    else
-        //        // Maybe we just need this as the default if we transfer all this stuff above to the HomeFragment 
-        //        return NavigationUI.OnNavDestinationSelected(menuItem, Navigation.FindNavController(this, Resource.Id.nav_host)) || base.OnOptionsItemSelected(menuItem);
-        //}
-        #endregion
-
-        #region OnOptionsItemSelected - Commented - Moved to HomeFragment - Method now called OnMenuItemSelected 
-        //public override bool OnOptionsItemSelected(IMenuItem menuItem)
-        //{
-        //    if (!animateFragments)
-        //        AnimationResource.Fader2();
-        //    else
-        //        AnimationResource.Slider();
-
-        //    NavOptions navOptions = new NavOptions.Builder()
-        //            .SetLaunchSingleTop(true)
-        //            .SetEnterAnim(AnimationResource.EnterAnimation)
-        //            .SetExitAnim(AnimationResource.ExitAnimation)
-        //            .SetPopEnterAnim(AnimationResource.PopEnterAnimation)
-        //            .SetPopExitAnim(AnimationResource.PopExitAnimation)
-        //            .SetPopUpTo(Resource.Id.home_fragment, false, true)     // Inclusive false, saveState true.
-        //            .SetRestoreState(true)
-        //            .Build();
-
-        //    if (menuItem.ItemId == Resource.Id.action_settings)
-        //    {
-        //        navController.Navigate(Resource.Id.settingsFragment, null, navOptions);
-        //        return true;
-        //    }
-        //    else if (menuItem.ItemId == Resource.Id.action_subscription_info)
-        //    {
-        //        ShowSubscriptionInfoDialog(GetString(Resource.String.subscription_explanation_title), GetString(Resource.String.subscription_explanation_text));
-        //        return true;
-        //    }
-        //    else
-        //        // Maybe we just need this as the default if we transfer all this stuff above to the HomeFragment 
-        //        return NavigationUI.OnNavDestinationSelected(menuItem, Navigation.FindNavController(this, Resource.Id.nav_host)) || base.OnOptionsItemSelected(menuItem);
-        //}
-        #endregion
-
-        #region OnCreateOptionsMenu - Commented  - Moved to HomeFragment - Method now called OnCreateMenu
-        //public override bool OnCreateOptionsMenu(IMenu menu)
-        //{
-        //    base.OnCreateOptionsMenu(menu);
-        //    MenuInflater.Inflate(Resource.Menu.main, menu);
-        //    return true;
-        //}
-        #endregion
-
-        #region ShowSubscriptionInfoDialog - Commented - Moved to HomeFragment
-        //private void ShowSubscriptionInfoDialog(string title, string explanation)
-        //{
-        //    string tag = "SubscriptionInfoDialogFragment";
-        //    AndroidX.Fragment.App.FragmentManager fm = SupportFragmentManager;
-        //    if (fm != null && !fm.IsDestroyed)
-        //    {
-        //        AndroidX.Fragment.App.Fragment fragment = fm.FindFragmentByTag(tag);
-        //        if (fragment == null)
-        //            BasicDialogFragment.NewInstance(title, explanation).Show(fm, tag);
-        //    }
-        //}
-        #endregion
     }
 }
 

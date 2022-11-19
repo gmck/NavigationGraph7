@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <resources>
 
+	
 	<!--RedBmw Dark theme colors-->
 	<color name="red_200">#ef9a9a</color>
 	<color name="red_200_dark">#ba6b6c</color>

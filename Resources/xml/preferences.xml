@@ -35,13 +35,27 @@
 		<androidx.preference.CheckBoxPreference
 			app:iconSpaceReserved="false"
 			android:defaultValue ="false"
+			android:key ="use_dynamic_colors"
+			android:title ="@string/use_dynamic_colors"
+			android:summary ="@string/use_dynamic_colors_summary"/>
+
+		<androidx.preference.CheckBoxPreference
+			app:iconSpaceReserved="false"
+			android:defaultValue ="false"
+			android:key ="use_transparent_statusbar"
+			android:title ="@string/use_transparent_statusbar"
+			android:summary ="@string/use_transparent_statusbar_summary"/>
+		
+		<androidx.preference.CheckBoxPreference
+			app:iconSpaceReserved="false"
+			android:defaultValue ="false"
 			android:key ="use_animations"
 			android:title ="@string/use_animations"
 			android:summary ="@string/use_animations_summary"/>
 
 		<androidx.preference.CheckBoxPreference
 			app:iconSpaceReserved="false"
-			android:defaultValue ="true"
+			android:defaultValue ="false"
 			android:key ="devicesWithNotchesAllowFullScreen"
 			android:summary ="@string/devicesWithNotchesAllowFullscreenSummary"
 			android:title ="@string/devicesWithNotchesAllowFullscreen"/>
@@ -68,6 +82,12 @@
 		  android:summary="@string/showSubscriptionMenuItemSummary"
 		  android:title="@string/showSubscriptionMenuItemTitle" />
 
+		<androidx.preference.CheckBoxPreference
+			app:iconSpaceReserved="false"
+			android:defaultValue ="false"
+			android:key ="helper_screens"
+			android:title ="@string/reset_helper_screens"
+			android:summary ="@string/reset_helper_screens_summary"/>
 	</androidx.preference.PreferenceCategory>
 
 </androidx.preference.PreferenceScreen>

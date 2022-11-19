@@ -1,6 +1,8 @@
 ﻿using Android.Content;
 using Android.OS;
 using Android.Views;
+using AndroidX.ConstraintLayout.Widget;
+using AndroidX.Core.View;
 using AndroidX.Fragment.App;
 using AndroidX.Navigation;
 using AndroidX.Preference;
@@ -12,7 +14,7 @@ using System;
 
 namespace com.companyname.navigationgraph7.Fragments
 {
-    public class LeaderboardPagerFragment : Fragment  
+    public class LeaderboardPagerFragment : Fragment, IOnApplyWindowInsetsListener
     {
         private ViewPager2 leaderboardViewPager;
         private LeaderboardViewPagerStateAdapter leaderboardViewPagerStateAdapter;
@@ -22,16 +24,23 @@ namespace com.companyname.navigationgraph7.Fragments
         private bool useViewPagerAnimations;
         private NavFragmentOnBackPressedCallback onBackPressedCallback;
 
+        private ConstraintLayout leaderboardConstraintLayout;
+        private int initialPaddingBottom;
+
         public LeaderboardPagerFragment() { }
 
         #region OnCreateView
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             base.OnCreateView(inflater, container, savedInstanceState);
-
             View view = inflater.Inflate(Resource.Layout.fragment_leaderboard_viewpager, container, false);
+            leaderboardConstraintLayout = view.FindViewById<ConstraintLayout>(Resource.Id.leader_board_constraint);
             leaderboardViewPager = view.FindViewById<ViewPager2>(Resource.Id.holder_viewpager);
             leaderboardTabLayout = view.FindViewById<TabLayout>(Resource.Id.tablayout1);
+
+            ViewCompat.SetOnApplyWindowInsetsListener(leaderboardConstraintLayout, this);
+            initialPaddingBottom = leaderboardConstraintLayout.PaddingBottom;
+
             return view;
         }
         #endregion
@@ -44,7 +53,7 @@ namespace com.companyname.navigationgraph7.Fragments
             ISharedPreferences sharedPreferences = PreferenceManager.GetDefaultSharedPreferences(Activity);
             displayPageIndicator = sharedPreferences.GetBoolean("displayPageIndicator", false);
             useViewPagerAnimations = sharedPreferences.GetBoolean("useViewPagerAnimations", false);
-            
+
             
             // FragmentStateAdapter - which calls CreateFragment for the number of fragments - note the extra param ViewLifecycleOwner.Lifecycle 
             // Refer to https://stackoverflow.com/questions/61779776/leak-canary-detects-memory-leaks-for-tablayout-with-viewpager2/62184494#62184494 
@@ -77,6 +86,19 @@ namespace com.companyname.navigationgraph7.Fragments
             }
             else
                 leaderboardTabLayout.Visibility = ViewStates.Gone;
+        }
+        #endregion
+
+        #region OnApplyWindowInsets
+        public WindowInsetsCompat OnApplyWindowInsets(View v, WindowInsetsCompat insets)
+        {
+            // Need to keep the leaderboardTabLayout above the NavigationBar
+            if (v is ConstraintLayout)
+            {
+                AndroidX.Core.Graphics.Insets navigationBarsInsets = insets.GetInsets(WindowInsetsCompat.Type.NavigationBars());
+                v.SetPadding(v.PaddingLeft, v.PaddingTop, v.PaddingRight, initialPaddingBottom + navigationBarsInsets.Bottom);
+            }
+            return insets;
         }
         #endregion
 

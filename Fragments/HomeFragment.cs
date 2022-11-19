@@ -55,6 +55,7 @@ namespace com.companyname.navigationgraph7.Fragments
             enableSubscriptionInfoMenuItem = sharedPreferences.GetBoolean("showSubscriptionInfo", false);
 
             // New with release of Xamarin.AndroidX.Navigation.Fragment 2.5.1
+            // see https://medium.com/tech-takeaways/how-to-migrate-the-deprecated-oncreateoptionsmenu-b59635d9fe10
             menuHost = RequireActivity();
             menuHost.AddMenuProvider(this, ViewLifecycleOwner, AndroidX.Lifecycle.Lifecycle.State.Resumed);
             
@@ -63,6 +64,7 @@ namespace com.companyname.navigationgraph7.Fragments
 
             // More concise than the above 
             // (RequireActivity() as IMenuHost).AddMenuProvider(this, ViewLifecycleOwner, AndroidX.Lifecycle.Lifecycle.State.Resumed);
+
         }
         #endregion
 
