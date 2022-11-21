@@ -65,7 +65,7 @@ namespace com.companyname.navigationgraph7.Fragments
         #region ShowSystemUi
         private void ShowSystemUi()
         {
-            Activity.Window.ClearFlags(WindowManagerFlags.LayoutNoLimits); // We had to add, so we need to clear it.
+            Activity.Window.ClearFlags(WindowManagerFlags.LayoutNoLimits);// We had to add, so we need to clear it.
             //WindowCompat.SetDecorFitsSystemWindows(Activity.Window, true);    // Don't need because it is false at start up      
             WindowInsetsControllerCompat windowInsetsControllerCompat = WindowCompat.GetInsetsController(Activity.Window, Activity.Window.DecorView);
             windowInsetsControllerCompat.Show(WindowInsetsCompat.Type.StatusBars() | WindowInsetsCompat.Type.NavigationBars());

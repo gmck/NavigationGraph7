@@ -71,7 +71,7 @@ namespace com.companyname.navigationgraph7
             appBarConfiguration = new AppBarConfiguration.Builder(topLevelDestinationIds).SetOpenableLayout(drawerLayout).Build();  // SetDrawerLayout replaced with SetOpenableLayout
 
             // The following fragments are immersive fragments - see SetShortEdgesIfRequired
-            immersiveFragmentsDestinationIds = new List<int> { Resource.Id.race_result_fragment/*, Resource.Id.purchase_fragment */};
+            immersiveFragmentsDestinationIds = new List<int> { Resource.Id.race_result_fragment};
             
             NavigationUI.SetupActionBarWithNavController(this, navController, appBarConfiguration);
 
@@ -250,6 +250,11 @@ namespace com.companyname.navigationgraph7
                     .SetPopEnterAnim(AnimationResource.PopEnterAnimation)
                     .SetPopExitAnim(AnimationResource.PopExitAnimation)
                     .Build();
+            
+            Log.Debug(logTag, "Navigate to - Enter Animation " + navOptions.EnterAnim.ToString());
+            Log.Debug(logTag, "Navigate to - Exit Animation " + navOptions.ExitAnim.ToString());
+            Log.Debug(logTag, "Navigate to - Pop Enter Animation " + navOptions.PopEnterAnim.ToString());
+            Log.Debug(logTag, "Navigate to - Pop Exit Animation " + navOptions.PopExitAnim.ToString());
 
             bool proceed = false;
 
@@ -335,7 +340,7 @@ namespace com.companyname.navigationgraph7
             // Effectively it will be all fragments - or none, except all immersiveFragments will always be full screen because they will be in the List<int> immersiveFragmentDestinationIds. 
             if (Build.VERSION.SdkInt >= BuildVersionCodes.P)
             {
-                Window.Attributes.LayoutInDisplayCutoutMode = immersiveFragmentsDestinationIds.Contains<int>(navDestination.Id) /*&& devicesWithNotchesAllowFullScreen*/ ? LayoutInDisplayCutoutMode.ShortEdges : LayoutInDisplayCutoutMode.Default;
+                Window.Attributes.LayoutInDisplayCutoutMode = immersiveFragmentsDestinationIds.Contains<int>(navDestination.Id) | devicesWithNotchesAllowFullScreen ? LayoutInDisplayCutoutMode.ShortEdges : LayoutInDisplayCutoutMode.Default;
                 Log.Debug(logTag, "SetShortEdgesIfRequired - LayoutInDisplayCutoutMode is " + Window.Attributes.LayoutInDisplayCutoutMode.ToString());
             }
         }
