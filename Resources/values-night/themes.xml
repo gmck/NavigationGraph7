@@ -161,7 +161,7 @@
 		<item name="android:navigationBarColor">#80000000</item>
 
 		<!--Vehicle Image-->
-		<item name="vehicle_image">@drawable/green_vehicle1</item>
+		<item name="vehicle_image">@drawable/bmw_green</item>
 
 		<item name ="colorPagerIndicator">@color/white</item>
 		

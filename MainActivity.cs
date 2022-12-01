@@ -8,7 +8,6 @@ using AndroidX.DrawerLayout.Widget;
 using AndroidX.Navigation;
 using AndroidX.Navigation.Fragment;
 using AndroidX.Navigation.UI;
-using AndroidX.Preference;
 using Google.Android.Material.AppBar;
 using Google.Android.Material.BottomNavigation;
 using Google.Android.Material.Navigation;

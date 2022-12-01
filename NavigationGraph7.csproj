@@ -106,9 +106,8 @@
     <None Include="Properties\AndroidManifest.xml" />
     <None Include="Assets\AboutAssets.txt" />
     <AndroidResource Include="Resources\drawable\audi_blue.webp" />
-    <AndroidResource Include="Resources\drawable\audi_green.webp" />
+    <AndroidResource Include="Resources\drawable\bmw_green.webp" />
     <AndroidResource Include="Resources\drawable\bmw5.webp" />
-    <AndroidResource Include="Resources\drawable\green_vehicle1.webp" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\menu\menu_home_fragment.xml">
@@ -140,7 +139,7 @@
       <Version>1.0.0.1</Version>
     </PackageReference>
     <PackageReference Include="Xamarin.AndroidX.Navigation.Fragment">
-      <Version>2.5.1</Version>
+      <Version>2.5.3</Version>
     </PackageReference>
     <PackageReference Include="Xamarin.AndroidX.Navigation.UI">
       <Version>2.5.1</Version>
