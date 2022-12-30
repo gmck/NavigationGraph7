@@ -142,7 +142,7 @@ namespace com.companyname.navigationgraph7.Fragments
 
             int index = Convert.ToInt16(e.NewValue.ToString());
             string systemThemeValue = systemThemeListPreference.GetEntries()[index - 1];
-            systemThemeListPreference.Summary = (index != -1) ? systemThemeValue : colorThemeListPreference.DefaultThemeValue;
+            systemThemeListPreference.Summary = (index != -1) ? systemThemeValue : systemThemeListPreference.DefaultSystemThemeValue;
 
             // Only available on devices running Android 12+
             
